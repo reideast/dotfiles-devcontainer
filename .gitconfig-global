@@ -1,0 +1,84 @@
+[pull]
+	rebase = true
+[protocol]
+	version = 2
+
+[alias]
+    # Information
+    s = status
+    sh = show
+    msg = log -1 HEAD
+    l = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) %C(dim white)%ar%C(reset)%C(auto)%d%C(reset) %C(white)%s%C(reset) %C(dim white)@%al - %an%C(reset)'
+    # Note on --format:
+    #     %C(color-name)...%C(reset) - Change colour
+    #     %h - commit hash, abbrieviated
+    #     %ar - commit authoring date, relative (e.g. "7 months ago")
+    #     %d - ref names (e.g. "(HEAD -> main, origin/main)")
+    #     %s - subject AKA git -m message
+    #     %an - author name
+    #     %ae - author email
+    #     %al - author email, but only preceeding the @
+    alias = config --get-regexp ^alias\\.
+
+    # Staging
+    a = add --patch
+    ai = add --interactive
+    aa = add --all
+    unstage = reset HEAD --
+    discard = restore --patch
+
+    # Commiting
+    m = commit -m
+    ma = commit --amend
+    man = commit --amend --no-edit
+
+    # Diffs
+    ds = diff --staged  # This is the same as --cached, but it's the "new style" switch
+    dc = diff --cached
+    dcc = diff --color-words --word-diff-regex=. --cached
+    dcw = diff --word-diff --cached
+    chardiff = diff --color-words --word-diff-regex=.
+    worddiff = diff --word-diff
+    untrack = clean -di
+
+    # Branching
+    c = checkout
+    cb = checkout -b
+    br = checkout -b
+    b = branch -vv --sort=committerdate
+    bshow = branch --show-current
+    fork = merge-base --fork-point
+    # lb = "!f() { git l --branches='''*$1*'''; }; f"
+    laeast = l --branches='*aeast*' --remotes='*aeast*'
+
+    # Fetch and Push
+    f = fetch --all
+    fmain = fetch origin main:main # Pull origin/main (without switching branches!)
+    fmaster = fetch origin master:master # Pull origin/master (without switching branches!)
+    p = push
+    pu = "!f() { git push --set-upstream origin $(git branch --show-current); }; f" # push setting upstream, e.g. push -u
+    pf = "!f() { echo; read -p 'Are you sure you want to force push? (y/N)? ' -n 1 -r; echo; if [[ $REPLY =~ ^[Yy]$ ]]; then git push --force-with-lease; else echo 'Cancelled the git push'; fi }; f" # force push (after prompt, and with-lease to avoid clobbering somebody else's changes)
+
+    # Rebase
+    ri = rebase --interactive
+    rc = rebase --continue
+    ra = rebase --abort
+    rmain = "!f() { echo; read -p 'Are you sure you want stash and rebase on main? (y/N)? ' -n 1 -r; echo; if [[ $REPLY =~ ^[Yy]$ ]]; then git rebase main --autostash; else echo 'Cancelled the git rebase main'; fi }; f" # rebase main (after prompt!)
+    rmaster = "!f() { echo; read -p 'Are you sure you want stash and rebase on master? (y/N)? ' -n 1 -r; echo; if [[ $REPLY =~ ^[Yy]$ ]]; then git rebase master --autostash; else echo 'Cancelled the git rebase master'; fi }; f" # rebase master (after prompt!)
+
+    # Stash
+    ss = stash save
+    ssa = stash save --patch
+    ssm = stash save -m
+    ssma = stash save --patch -m
+    ssam = stash save --patch -m
+    ssp = stash pop
+    ssap = stash apply
+    ssh = stash show --patch
+    ssl = stash list
+
+[merge]
+    tool = meld  # install via `brew install --cask meld"
+
+[credential]
+	helper = 

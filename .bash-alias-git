@@ -1,0 +1,66 @@
+# Git (helper) aliases
+
+echo DEBUG-bash-alias-git
+
+# get informtion
+alias gitalias='git alias' # (show all aliases) git config --get-regexp ^alias\\.
+alias gits='git s' # git status
+alias gitmsg='git msg' # (show latest commit message) git log -1 HEAD
+# alias gitmsg="git show --summary --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)"
+alias gitchardiff='git chardiff' # diff --color-words --word-diff-regex=.
+alias gitworddiff='git worddiff' # diff --color-words
+alias gitl='git l' # (gitk) git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) %C(dim white)(%ar)%C(reset)%C(auto)%d%C(reset) %C(white)%s%C(reset) %C(dim white)- %an %ae%C(reset)'
+alias gitll='git l --all' # show all branches
+alias gitfork='git fork' # (Show hash of where current branch forked from master) git merge-base --fork-point master
+
+# make commits
+alias gita='git a' # (add all) git add -A
+alias gitpatch='git patch' # (add all interactive) git add -p
+alias gitm='git m' # git commit -m [message]
+alias gitma='git ma' # (overwrite commit contents) git commit --amend
+alias gitman='git man' # (instant overwrite commit) git commit --amend --no-edit
+alias gitunstage='git unstage' # (reset ALL staged file) git reset HEAD --
+alias gituntrack='git untrack' # (remove untracked files safely) git clean -di
+
+# manipulate branches
+alias gitc='git c' # git checkout [ref]
+alias gitbr='git br' # git checkout -b [branch]
+alias gitb='git b' # (show branches and their upstreams) git branch -vv
+alias gitf='git f' # git fetch --all
+
+# fetch and highlight a relevant branch
+function gitfgrep() {
+    if [[ $# -lt 1 ]]; then
+        echo 'Usage: gitfgrep <term to highlight>. Example: gitfgrep STORY-1234 or gitfgrep aeast|team'
+    else
+        gitf | grep -E "$1|$"
+    fi
+}
+
+function gitd() {
+  if [[ -z "$1" ]]; then # or could do [ $# == 0 ]
+    echo "gitd(): No args"
+    git diff
+  elif [[ "$1" = 'head' ]]; then
+    echo "gitd(): head"
+    git diff HEAD
+  elif [[ "$1" = 'fork' || "$1" = 'base' || "$1" = 'branch' ]]; then
+    echo "gitd(): fork/base/branch"
+    if [[ $# -eq 1 ]]; then
+      git diff $(git merge-base --fork-point master)
+    else
+      local base_branch="$2"
+      shift
+      shift
+      echo "gitd forked from branch $base_branch"
+      git diff $(git merge-base --fork-point $base_branch) $@
+    fi
+  elif [[ $1 =~ ^[0-9]+$ ]]; then
+    echo "gitd(): positive integer"
+    git diff HEAD~$1
+  else
+    echo "gitd(): pass through args"
+    git diff $@
+  fi
+}
+

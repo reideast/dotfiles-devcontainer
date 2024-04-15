@@ -1,0 +1,91 @@
+echo "${RED}ERROR:${NOCOLOR} Using my custom vi-mode. SHOULD BE USING oh-my-zsh/vi-mode!!"
+bindkey -v
+
+# Faster Mode Switching
+# See: http://stratus3d.com/blog/2017/10/26/better-vi-mode-in-zshell/
+# "When you press ESC Zsh normally waits 0.4 seconds before switching to command mode. This is a really long time to wait when typing in a command sequence but we can make it shorter with the KEYTIMEOUT setting. Setting it to 1 makes the wait only 10 milliseconds, which is much more reasonable. Add the following to your .zshrc file:"
+# Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second)
+export KEYTIMEOUT=1
+
+bindkey '^P' up-history
+bindkey '^N' down-history
+
+# backspace and ^h working even after
+# returning from command mode
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+
+# ctrl-w removed word backwards
+bindkey '^w' backward-kill-word
+
+# ctrl-r starts searching history backward
+bindkey '^r' history-incremental-search-backward
+
+bindkey -a 'gg' beginning-of-buffer-or-history
+bindkey -a G end-of-buffer-or-history
+
+# Text Objects i" a( etc
+# autoload -U select-bracketed select-quoted
+# zle -N select-bracketed
+# zle -N select-quoted
+#   for km in viopp visual; do
+#   bindkey -M $km -- '-' vi-up-line-or-history
+#   for c in {a,i}"${(s..):-\'\"\`\|,./:;-=+@}"; do
+#     bindkey -M $km $c select-quoted
+#   done
+#   for c in {a,i}${(s..):-'()[]{}<>bB'}; do
+#     bindkey -M $km $c select-bracketed
+#   done
+# done
+
+# # Clipboard integration with pbcopy/pbpaste
+# [[ -n $DISPLAY ]] && (( $+commands[xclip] )) && {
+# 
+#   function cutbuffer() {
+#     zle .$WIDGET
+#     echo $CUTBUFFER | pbcopy
+#   }
+# 
+#   zle_cut_widgets=(
+#     vi-backward-delete-char
+#     vi-change
+#     vi-change-eol
+#     vi-change-whole-line
+#     vi-delete
+#     vi-delete-char
+#     vi-kill-eol
+#     vi-substitute
+#     vi-yank
+#     vi-yank-eol
+#   )
+#   for widget in $zle_cut_widgets
+#   do
+#     zle -N $widget cutbuffer
+#   done
+# 
+#   function putbuffer() {
+#     zle copy-region-as-kill "$(pbpaste)"
+#     zle .$WIDGET
+#   }
+# 
+#   zle_put_widgets=(
+#     vi-put-after
+#     vi-put-before
+#   )
+#   for widget in $zle_put_widgets
+#   do
+#     zle -N $widget putbuffer
+#   done
+# }
+
+# precmd() { RPROMPT="" }
+# function zle-line-init zle-keymap-select {
+#    VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]%  %{$reset_color%}"
+#    VIM_INSERT_PROMPT="%{$fg_bold[yellow]%} [% INSERT]%  %{$reset_color%}"
+#    RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $EPS1"
+#    zle reset-prompt
+# }
+# 
+# zle -N zle-line-init
+# zle -N zle-keymap-select
+

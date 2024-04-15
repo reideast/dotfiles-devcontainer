@@ -1,0 +1,6 @@
+etc-hosts-backup/
+
+
+# Ignore the local git config; only commit .gitconfig-global
+.gitconfig
+

@@ -1,0 +1,3 @@
+
+source .bash-alias-git
+

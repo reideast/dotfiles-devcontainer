@@ -1,0 +1,102 @@
+# Git (helper) aliases
+
+# get informtion
+alias gitalias='git alias' # (show all aliases) git config --get-regexp ^alias\\.
+alias gits='git s' # git status
+alias gitsh='git sh' # git show (e.g. show previous commit, including both message and patch)
+alias gitmsg='git msg' # (show latest commit message) git log -1 HEAD
+# alias gitmsg="git show --summary --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)"
+alias gitchardiff='git chardiff' # diff --color-words --word-diff-regex=.
+alias gitworddiff='git worddiff' # diff --color-words
+alias gitds='git ds' # diff --staged (e.g. show what you've staged)
+alias gitdc='git dc' # diff --cached (e.g. show what you've staged)
+alias gitdcc='git dcc' # diff --color-words --word-diff-regex=. --cached
+alias gitdcw='git dcw' # dcw = diff --word-diff --cached
+alias gitl='git l' # (gitk) git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) %C(dim white)(%ar)%C(reset)%C(auto)%d%C(reset) %C(white)%s%C(reset) %C(dim white)- %an %ae%C(reset)'
+alias gitll='git l --all' # show all branches
+alias gitfork='git fork' # (Show hash of where current branch forked from an upstream branch, e.g. main) git merge-base --fork-point main
+
+# make commits
+alias gita='git a' # (add via patch interface) git add -p
+alias gitaa='git aa' # (add all) git add -A
+alias gitai='git ai' # (add interactive) git add -i
+alias gitm='git m' # git commit -m [message]
+alias gitma='git ma' # (overwrite commit contents) git commit --amend
+alias gitman='git man' # (instant overwrite commit) git commit --amend --no-edit
+alias gitunstage='git unstage' # (remove ALL staged files from the index) git reset HEAD --
+alias gitdiscard='git discard' # (delete changes from disk, using patch to approve each restore) git restore --patch
+alias gituntrack='prompt_confirm && git untrack' # (remove untracked files safely) git clean -di
+alias gitdanger='prompt_confirm && gits'  # Test
+
+# manipulate branches
+alias gitc='git c' # git checkout [ref]
+alias gitcb='git cb' # git checkout -b [ref]
+alias gitbr='git br' # git checkout -b [branch]
+alias gitb='git b' # (show branches and their upstreams) git branch -vv
+alias gitbshow='git bshow' # (show currently checked-out branch) git branch --show-current
+alias gitf='git f' # git fetch --all
+alias gitfmain='git fmain' # git fetch origin main:main
+alias gitfmaster='git fmaster' # git fetch origin master:master
+
+# push
+alias gitp='git p' # push
+alias gitpu='git pu' # push -u origin $(git branch --show-current)
+alias gitpf='git pf' # prompt_confirm && push --force-with-lease
+
+# rebase
+alias gitri='git ri' # rebase --interacive <ref_to_rebase_from>
+alias gitrc='git rc' # rebase --continue
+alias gitra='git ra' # rebase --abort
+alias gitrmain='git rmain' # rebase onto main (after prompt!)
+alias gitrmaster='git rmaster' # rebase onto master (after prompt!)
+alias gitfrmain='git fmain && git rmain' # Pull main and then rebase onto main
+alias gitfrmaster='git fmaster && git rmaster' # Pull master and then rebase onto master
+
+# stash
+alias gitss='git ss' # stash save
+alias gitssa='git ssa' # stash save --patch
+alias gitssm='git ssm' # stash save -m <message>
+alias gitssma='git ssma' # stash save --patch -m
+alias gitssam='git ssam' # stash save --patch -m
+alias gitssp='git ssp' # stash pop
+alias gitssap='git ssap' # stash apply
+alias gitssh='git ssh' # stash show --patch
+alias gitssl='git ssl' # stash list
+
+
+# fetch and highlight a relevant branch
+function gitfgrep() {
+    if [[ $# -lt 1 ]]; then
+        echo 'Usage: gitfgrep <term to highlight>. Example: gitfgrep STORY-1234 or gitfgrep aeast|team'
+    else
+        gitf | grep -E "$1|$"
+    fi
+}
+
+function gitd() {
+  if [[ -z "$1" ]]; then # or could do [ $# == 0 ]
+    echo "gitd(): No args"
+    git diff
+  elif [[ "$1" = 'head' ]]; then
+    echo "gitd(): head"
+    git diff HEAD
+  elif [[ "$1" = 'fork' || "$1" = 'base' || "$1" = 'branch' ]]; then
+    echo "gitd(): fork/base/branch"
+    if [[ $# -eq 1 ]]; then
+      git diff $(git merge-base --fork-point master)
+    else
+      local base_branch="$2"
+      shift
+      shift
+      echo "gitd forked from branch $base_branch"
+      git diff $(git merge-base --fork-point $base_branch) $@
+    fi
+  elif [[ $1 =~ ^[0-9]+$ ]]; then
+    echo "gitd(): positive integer"
+    git diff HEAD~$1
+  else
+    echo "gitd(): pass through args"
+    git diff $@
+  fi
+}
+
