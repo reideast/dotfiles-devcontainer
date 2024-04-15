@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 if [[ $(diff -q ~/.gitconfig .gitconfig-global) ]]; then
     echo "${YELLOW}You have modified ~/.gitconfig!${NOCOLOR} Git doesn't play nicely with symlinks..."
